@@ -1,0 +1,13 @@
+services:
+  livebook:
+    image: latest-cuda12:latest
+    ports:
+      - 8090:8090
+      - 8091:8091
+    environment:
+      - LIVEBOOK_PORT=8090
+      - LIVEBOOK_IFRAME_PORT=8091
+    volumes:
+      - ./data:/data
+      - ./notebooks:/notebooks
+

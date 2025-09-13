@@ -1,0 +1,6 @@
+# FROM ghcr.io/livebook-dev/livebook:latest
+FROM ghcr.io/livebook-dev/livebook:latest-cuda12
+RUN apt-get update && apt-get -y install curl && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -yv 
+COPY set_rust_home_and_start_livebook /set_rust_home_and_start_livebook.sh
+RUN chmod +x /set_rust_home_and_start_livebook.sh
+ENTRYPOINT ["/set_rust_home_and_start_livebook.sh"]

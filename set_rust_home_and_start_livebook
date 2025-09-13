@@ -1,0 +1,3 @@
+#!/bin/sh
+. /home/livebook/.cargo/env
+/app/bin/server
