@@ -1,6 +1,7 @@
 services:
   livebook:
-    image: latest-cuda12:latest
+    image: ghcr.io/livebook-dev/livebook:latest-cuda12
+    # image: latest-cuda12:latest
     ports:
       - 8090:8090
       - 8091:8091

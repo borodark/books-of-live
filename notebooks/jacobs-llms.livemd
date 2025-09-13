@@ -19,10 +19,27 @@ Mix.install([
 
 ```elixir
 alias VegaLite, as: Vl
+alias Explorer.DataFrame
+bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv")
+bitcoin_usd |> DataFrame.dtypes
+
+
 ```
 
 <!-- livebook:{"output":true} -->
 
 ```
-VegaLite
+%{
+  "Adj Close" => {:f, 64},
+  "Close" => {:f, 64},
+  "Date" => :string,
+  "High" => {:f, 64},
+  "Low" => {:f, 64},
+  "Open" => {:f, 64},
+  "Volume" => {:s, 64}
+}
+```
+
+```elixir
+
 ```
