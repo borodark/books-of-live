@@ -30,7 +30,8 @@ Explorer.PolarsBackend
 ```
 
 ```elixir
-bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv", dtypes: [ "Date": :date ])
+bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv", 
+  dtypes: [ Volume: :s64, Open: :f32, Date: :date ])
 
 ```
 
@@ -40,7 +41,7 @@ bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv", dtypes: [ "Date": :date ]
 #Explorer.DataFrame<
   Polars[3104 x 7]
   Date date [2015-01-03, 2015-01-04, 2015-01-05, 2015-01-06, 2015-01-07, ...]
-  Open f64 [314.846008, 281.145996, 265.084015, 274.610992, 286.076996, ...]
+  Open f32 [314.84600830078125, 281.14599609375, 265.0840148925781, 274.6109924316406, 286.0769958496094, ...]
   High f64 [315.149994, 287.230011, 278.341003, 287.553009, 298.753998, ...]
   Low f64 [281.082001, 257.612, 265.084015, 272.696014, 283.07901, ...]
   Close f64 [281.082001, 264.195007, 274.473999, 286.188995, 294.337006, ...]
@@ -62,7 +63,7 @@ bitcoin_usd |> DataFrame.dtypes
   "Date" => :date,
   "High" => {:f, 64},
   "Low" => {:f, 64},
-  "Open" => {:f, 64},
+  "Open" => {:f, 32},
   "Volume" => {:s, 64}
 }
 ```
