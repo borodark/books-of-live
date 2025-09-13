@@ -20,10 +20,37 @@ Mix.install([
 ```elixir
 alias VegaLite, as: Vl
 alias Explorer.DataFrame
-bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv")
+Explorer.Backend.get()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+Explorer.PolarsBackend
+```
+
+```elixir
+bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv", dtypes: [ "Date": :date ])
+
+```
+
+<!-- livebook:{"output":true} -->
+
+```text
+#Explorer.DataFrame<
+  Polars[3104 x 7]
+  Date date [2015-01-03, 2015-01-04, 2015-01-05, 2015-01-06, 2015-01-07, ...]
+  Open f64 [314.846008, 281.145996, 265.084015, 274.610992, 286.076996, ...]
+  High f64 [315.149994, 287.230011, 278.341003, 287.553009, 298.753998, ...]
+  Low f64 [281.082001, 257.612, 265.084015, 272.696014, 283.07901, ...]
+  Close f64 [281.082001, 264.195007, 274.473999, 286.188995, 294.337006, ...]
+  Adj Close f64 [281.082001, 264.195007, 274.473999, 286.188995, 294.337006, ...]
+  Volume s64 [33054400, 55629100, 43962800, 23245700, 24866800, ...]
+>
+```
+
+```elixir
 bitcoin_usd |> DataFrame.dtypes
-
-
 ```
 
 <!-- livebook:{"output":true} -->
@@ -32,14 +59,10 @@ bitcoin_usd |> DataFrame.dtypes
 %{
   "Adj Close" => {:f, 64},
   "Close" => {:f, 64},
-  "Date" => :string,
+  "Date" => :date,
   "High" => {:f, 64},
   "Low" => {:f, 64},
   "Open" => {:f, 64},
   "Volume" => {:s, 64}
 }
-```
-
-```elixir
-
 ```
