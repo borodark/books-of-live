@@ -10,16 +10,57 @@ Mix.install([
   {:ollama, "0.9.0"},
   {:explorer, "~> 0.10"},
   {:kino, "~> 0.17"},
-	{:axon, "~> 0.7"},
- 	{:nx, "~> 0.10"}
+  {:axon, "~> 0.7"},
+  {:nx, "~> 0.10"},
+  {:pythonx, "~> 0.4.2"},
+  {:kino_pythonx, "~> 0.1.0"}
 ])
+```
+
+```pyproject.toml
+[project]
+name = "project"
+version = "0.0.0"
+requires-python = "==3.13.*"
+dependencies = ["liac-arff"]
 ```
 
 ## Section
 
+```python
+import arff
+file_ = open('/data/LSST_TEST.arff')
+arff.load(file_,encode_nominal=True)
+
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/home/livebook/.cache/pythonx/0.4.7/uv/0.8.5/projects/k2u77era4sgcipv5eugwr7sjh4/.venv/lib/python3.13/site-packages/arff.py", line 1059, in load
+    return decoder.decode(fp, encode_nominal=encode_nominal,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                          return_type=return_type)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/livebook/.cache/pythonx/0.4.7/uv/0.8.5/projects/k2u77era4sgcipv5eugwr7sjh4/.venv/lib/python3.13/site-packages/arff.py", line 896, in decode
+    raise e
+  File "/home/livebook/.cache/pythonx/0.4.7/uv/0.8.5/projects/k2u77era4sgcipv5eugwr7sjh4/.venv/lib/python3.13/site-packages/arff.py", line 892, in decode
+    return self._decode(s, encode_nominal=encode_nominal,
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        matrix_type=return_type)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/livebook/.cache/pythonx/0.4.7/uv/0.8.5/projects/k2u77era4sgcipv5eugwr7sjh4/.venv/lib/python3.13/site-packages/arff.py", line 823, in _decode
+    attr = self._decode_attribute(row)
+  File "/home/livebook/.cache/pythonx/0.4.7/uv/0.8.5/projects/k2u77era4sgcipv5eugwr7sjh4/.venv/lib/python3.13/site-packages/arff.py", line 765, in _decode_attribute
+    raise BadAttributeType()
+arff.BadAttributeType: Bad @ATTRIBUTE type, at line 28.
+```
+
 ```elixir
 alias VegaLite, as: Vl
-alias Explorer.DataFrame
+require Explorer.DataFrame, as: DF
 Explorer.Backend.get()
 ```
 
@@ -30,8 +71,9 @@ Explorer.PolarsBackend
 ```
 
 ```elixir
-bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv", 
-  dtypes: [ Volume: :s64, Open: :f32, Date: :date ])
+bitcoin_usd = DF.from_csv!("/data/BTC-USD.csv", 
+  dtypes: [ Volume: :s64, Date: :date ]) 
+ 
 
 ```
 
@@ -41,7 +83,7 @@ bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv",
 #Explorer.DataFrame<
   Polars[3104 x 7]
   Date date [2015-01-03, 2015-01-04, 2015-01-05, 2015-01-06, 2015-01-07, ...]
-  Open f32 [314.84600830078125, 281.14599609375, 265.0840148925781, 274.6109924316406, 286.0769958496094, ...]
+  Open f64 [314.846008, 281.145996, 265.084015, 274.610992, 286.076996, ...]
   High f64 [315.149994, 287.230011, 278.341003, 287.553009, 298.753998, ...]
   Low f64 [281.082001, 257.612, 265.084015, 272.696014, 283.07901, ...]
   Close f64 [281.082001, 264.195007, 274.473999, 286.188995, 294.337006, ...]
@@ -51,7 +93,7 @@ bitcoin_usd = DataFrame.from_csv!("/data/BTC-USD.csv",
 ```
 
 ```elixir
-bitcoin_usd |> DataFrame.dtypes
+bitcoin_usd |> DF.dtypes
 ```
 
 <!-- livebook:{"output":true} -->
@@ -63,7 +105,56 @@ bitcoin_usd |> DataFrame.dtypes
   "Date" => :date,
   "High" => {:f, 64},
   "Low" => {:f, 64},
-  "Open" => {:f, 32},
+  "Open" => {:f, 64},
   "Volume" => {:s, 64}
 }
+```
+
+```elixir
+
+cols = ~w(open high low close adj_close volume)
+n_bitcoin_usd =
+ 	    bitcoin_usd |> DF.rename([:date, :open, :high, :low, :close, :adj_close, :volume])
+  |> DF.mutate(
+ 	    for col <- across(^cols) do
+ 	      {col.name, (col - mean(col)) / standard_deviation(col)}
+ 	    end
+ 	  )
+```
+
+<!-- livebook:{"output":true} -->
+
+```text
+#Explorer.DataFrame<
+  Polars[3104 x 7]
+  date date [2015-01-03, 2015-01-04, 2015-01-05, 2015-01-06, 2015-01-07, ...]
+  open f64 [-0.8527735945544607, -0.8548672908614139, -0.855865181019496, -0.8552732940919386, -0.8545609403328269, ...]
+  high f64 [-0.8527161745734309, -0.854408285776562, -0.8549470106755537, -0.8543887102440703, -0.8537098660279742, ...]
+  low f64 [-0.8560535795624857, -0.8575547814571558, -0.8570768520750904, -0.8565899689547606, -0.8559258457079166, ...]
+  close f64 [-0.8555182976791802, -0.85656759918245, -0.8559288968913438, -0.8552009660995403, -0.8546946758627487, ...]
+  adj_close f64 [-0.8555182976791802, -0.85656759918245, -0.8559288968913438, -0.8552009660995403, -0.8546946758627487, ...]
+  volume f64 [-0.8726243267247724, -0.8714738848878038, -0.872068417687913, -0.8731241933385601, -0.8730415795602193, ...]
+>
+```
+
+```elixir
+n_bitcoin_usd |> DF.dtypes
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+%{
+  "adj_close" => {:f, 64},
+  "close" => {:f, 64},
+  "date" => :date,
+  "high" => {:f, 64},
+  "low" => {:f, 64},
+  "open" => {:f, 64},
+  "volume" => {:f, 64}
+}
+```
+
+```python
+
 ```
